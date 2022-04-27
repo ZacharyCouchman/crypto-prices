@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+    prod:
+        container_name: crypto-prices
+        image: crypto-prices:latest
+        build:
+            context: .
+            target: production
+            dockerfile: ./Dockerfile
+        depends_on:
+            - mongodb
+        command: npm run start:prod
+        ports:
+            - 3000:3000
+        networks:
+            - crypto-network
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: unless-stopped
+        
+    mongodb:
+        container_name: mongodb
+        image: mongo:latest
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: password
+            MONGO_INITDB_DATABASE: cryptodb
+        networks:
+            - crypto-network
+        ports:
+            - 27017:27017
+        volumes:
+         - ./database:/data/db
+    
+
+networks:
+    crypto-network:
