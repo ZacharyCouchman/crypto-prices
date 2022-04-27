@@ -2,12 +2,8 @@ name: GitHub Actions Demo
 on: [push]
 env:
   IMAGE_NAME: crypto-prices
-jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
-    steps:
-      
-  Build-Dokcer-Image:
+jobs:  
+  Build-Docker-Image:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
