@@ -21,7 +21,7 @@ jobs:
         run: docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+        run: echo "${{ secrets.SECRET_PAT }}" | docker login ghcr.io -u $ --password-stdin
       
       - name: Push Image to Registry
         run: |
