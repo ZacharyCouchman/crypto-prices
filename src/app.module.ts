@@ -1,19 +1,10 @@
 import { Module, CacheModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CryptoPriceModule } from './CryptoPrices/crypto-price.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { CryptoPriceModule } from './crypto-prices/crypto-price.module';
 
 @Module({
-  imports: [
-    CacheModule.register({ isGlobal: true }),
-    CryptoPriceModule,
-    MongooseModule.forRoot('mongodb://mongodb:27017', {
-      dbName: 'cryptodb',
-      user: 'admin',
-      pass: 'password',
-    }),
-  ],
+  imports: [CacheModule.register({ isGlobal: true }), CryptoPriceModule],
   controllers: [AppController],
   providers: [AppService],
 })

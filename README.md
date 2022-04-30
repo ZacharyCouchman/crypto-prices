@@ -24,7 +24,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A proof of concept for getting various cryptocurrency prices and caching them.
 
 ## Installation
 
@@ -58,16 +58,63 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## ChainLink demo
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+async loadEthPriceFromChainlink(): Promise<any> {
+    const provider = new ethers.providers.JsonRpcProvider(MAINNET_INFURA_URL);
+    const addr = MAINNET_ETH_USD_CONTRACT;
+    const priceFeed = new ethers.Contract(
+      addr,
+      aggregatorV3InterfaceABI,
+      provider,
+    );
 
-## Stay in touch
+    let decimals: number;
+    let latestRoundData: any;
+    let price: string;
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+    try {
+      decimals = await priceFeed.decimals();
+      latestRoundData = await priceFeed.latestRoundData();
+      price = parseFloat(
+        ethers.utils.formatUnits(
+          BigNumber.from(latestRoundData.answer),
+          decimals,
+        ),
+      ).toFixed(2); // could use currency formatter here for USD
+      console.log('Latest Round Data', latestRoundData);
+      console.log('ETH/USD price: ', price);
+      console.log(
+        'Updated at',
+        latestRoundData.updatedAt.toBigInt().toString(),
+      );
+    } catch (exception) {
+      console.error(exception);
+      throw new Error('Failed to retrieve price data from Chainlink');
+    }
 
-## License
+    const ethUsdPrice = {
+      label: 'ETH/USD',
+      price,
+      updatedAt: latestRoundData.updatedAt.toBigInt().toString(),
+    } as PriceFeedCacheItem;
+    console.log('caching item: ', ethUsdPrice);
+    try {
+      await this.cacheManager.set('eth-usd-price', ethUsdPrice, { ttl: 3600 });
+      console.log('cached', await this.cacheManager.get('eth-usd-price'));
+    } catch (ex) {
+      console.error(ex);
+    }
 
-Nest is [MIT licensed](LICENSE).
+    return 'Successfully added to memory cache and mongodb';
+  }
+
+
+  async getCryptoPrices(): Promise<PriceFeedCacheItem[]> {
+    const ethUsdPrice = await this.cacheManager.get<PriceFeedCacheItem>(
+      'eth-usd-price',
+    );
+    return [ethUsdPrice];
+  }
+  ```
