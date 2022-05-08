@@ -118,3 +118,8 @@ async loadEthPriceFromChainlink(): Promise<any> {
     return [ethUsdPrice];
   }
   ```
+
+  ## Deployment
+  https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service
+  
+  https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-fargate.html

@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: Build and Push to ghcr
 on: [push]
 env:
   IMAGE_NAME: crypto-prices
